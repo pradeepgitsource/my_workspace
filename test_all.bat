@@ -29,7 +29,8 @@ REM Install backend dependencies
 echo.
 echo 📦 Installing Backend Dependencies...
 cd backend
-pip install -e .
+pip install fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic
+pip install pytest pytest-asyncio pytest-cov httpx
 if %errorlevel% neq 0 (
     echo ❌ Failed to install backend dependencies
     exit /b 1
@@ -51,7 +52,10 @@ cd ..
 REM Run the comprehensive test suite
 echo.
 echo 🧪 Running Comprehensive Test Suite...
-python run_tests.py
+cd backend
+set PYTHONPATH=%CD%
+pytest tests/test_schemas_comprehensive.py tests/test_utils_comprehensive.py tests/test_services.py tests/test_api_endpoints_mocked.py -v --cov=app --cov-report=html --cov-report=term-missing
+cd ..
 
 if %errorlevel% equ 0 (
     echo.
