@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
+from fastapi.exceptions import RequestValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from typing import List
@@ -19,6 +20,15 @@ from app.core.schemas import *
 from app.core.dependencies import get_current_active_user
 from app.core.user_models import User
 from app.routes.auth import router as auth_router
+
+# Import exception handlers
+from app.core.exceptions import BaseCustomException
+from app.core.exception_handlers import (
+    custom_exception_handler,
+    http_exception_handler,
+    validation_exception_handler,
+    general_exception_handler
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -40,6 +50,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add global exception handlers
+app.add_exception_handler(BaseCustomException, custom_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
