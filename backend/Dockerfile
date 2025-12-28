@@ -19,11 +19,12 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 WORKDIR /app
 
 # Copy project files
+COPY requirements.txt .
 COPY pyproject_refactored.toml pyproject.toml
 COPY . .
 
 # Install dependencies with uv
-RUN uv pip install --system fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic email-validator
+RUN uv pip install --system -r requirements.txt
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app

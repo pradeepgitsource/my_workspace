@@ -6,7 +6,7 @@ from typing import List
 import logging
 import time
 
-from app.core.database import create_tables, get_db
+from app.core.database import create_tables, get_db, engine
 from app.repositories.flight_repository import FlightRepository
 from app.repositories.passenger_repository import PassengerRepository
 from app.repositories.booking_repository import BookingRepository
@@ -117,6 +117,10 @@ async def get_checkin_status(booking_id: str, service: BookingService = Depends(
 @app.on_event("startup")
 async def startup_event():
     logger.info("Creating database tables...")
+    # Drop and recreate users table to fix schema
+    from sqlalchemy import text
+    async with engine.begin() as conn:
+        await conn.execute(text("DROP TABLE IF EXISTS users CASCADE"))
     await create_tables()
     logger.info("Database tables created successfully")
 

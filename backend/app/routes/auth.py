@@ -12,22 +12,26 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 
 @router.post("/register", response_model=UserSchema)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
-    # Check if user exists
-    result = await db.execute(select(User).where(User.username == user_data.username))
-    if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Username already registered")
-    
-    # Create user
-    hashed_password = get_password_hash(user_data.password)
-    user = User(
-        username=user_data.username,
-        email=user_data.email,
-        hashed_password=hashed_password
-    )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
-    return user
+    try:
+        # Check if user exists
+        result = await db.execute(select(User).where(User.username == user_data.username))
+        if result.scalar_one_or_none():
+            raise HTTPException(status_code=400, detail="Username already registered")
+        
+        # Create user
+        hashed_password = get_password_hash(user_data.password)
+        user = User(
+            username=user_data.username,
+            email=str(user_data.email),
+            hashed_password=hashed_password
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        return user
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 @router.post("/token", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
