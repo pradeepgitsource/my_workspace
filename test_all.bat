@@ -29,7 +29,7 @@ REM Install backend dependencies
 echo.
 echo 📦 Installing Backend Dependencies...
 cd backend
-pip install fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic
+pip install fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic email-validator
 pip install pytest pytest-asyncio pytest-cov httpx
 if %errorlevel% neq 0 (
     echo ❌ Failed to install backend dependencies

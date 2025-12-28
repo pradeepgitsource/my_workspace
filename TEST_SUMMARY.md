@@ -210,7 +210,7 @@ Frontend Tests:
 ```bash
 # Backend
 pip install pytest pytest-asyncio pytest-cov httpx
-pip install fastapi uvicorn sqlalchemy asyncpg pydantic
+pip install fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic email-validator
 
 # Frontend
 npm install
@@ -262,11 +262,12 @@ npm test -- --coverage --verbose
 
 ### ✅ Completed
 - Comprehensive utility function testing
-- Schema validation with edge cases
-- Integration test scenarios
-- Frontend component testing
+- Schema validation with edge cases and email validation
+- Integration test scenarios with mocked dependencies
+- Frontend component testing framework
 - Error handling validation
 - Performance testing framework
+- Complete dependency management including email-validator
 
 ### 🚧 In Progress
 - Database integration tests

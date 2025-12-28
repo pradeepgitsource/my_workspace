@@ -23,7 +23,7 @@ COPY pyproject_refactored.toml pyproject.toml
 COPY . .
 
 # Install dependencies with uv
-RUN uv pip install --system fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic
+RUN uv pip install --system fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic email-validator
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app

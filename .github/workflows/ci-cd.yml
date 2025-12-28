@@ -42,7 +42,7 @@ jobs:
     - name: Install Backend Dependencies
       run: |
         cd backend
-        pip install fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic
+        pip install fastapi uvicorn sqlalchemy asyncpg "pydantic[email]" alembic email-validator
         pip install pytest pytest-asyncio pytest-cov httpx
     
     - name: Install Frontend Dependencies

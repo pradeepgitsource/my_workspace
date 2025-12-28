@@ -208,12 +208,39 @@ npm test -- --coverage
 ```
 
 ### Test Coverage
-- **Backend**: 78%+ coverage achieved
-- **Frontend**: Comprehensive component testing
-- **Integration**: End-to-end workflow testing
+- **Backend**: 78%+ coverage achieved with comprehensive test suite
+- **Frontend**: Component testing with React Testing Library
+- **Integration**: End-to-end workflow testing with mocked dependencies
 - **Reports**: HTML coverage reports generated
+- **Dependencies**: All required packages including email-validator for validation
 
 ## 🔧 Configuration
+
+### Dependencies
+```bash
+# Backend
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+pydantic[email]==2.5.0
+email-validator==2.1.0
+alembic==1.13.1
+python-multipart==0.0.6
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.2
+
+# Frontend
+react==18.2.0
+react-dom==18.2.0
+axios==1.6.2
+lucide-react==0.294.0
+tailwindcss==3.3.6
+```
 
 ### Environment Variables
 ```bash
