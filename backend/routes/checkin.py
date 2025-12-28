@@ -7,13 +7,16 @@ from database import get_db
 from models import Booking, Flight, Passenger, CheckinRecord
 from schemas import BookingCreate, BookingResponse, CheckinRequest, BoardingPassResponse
 from utils import assign_seat, generate_boarding_pass_number, get_boarding_group, validate_checkin_window
+from app.core.dependencies import get_current_active_user
+from app.core.user_models import User
 
 router = APIRouter(prefix="/api", tags=["bookings", "checkin"])
 
 @router.post("/bookings", response_model=BookingResponse, status_code=status.HTTP_201_CREATED)
 async def create_booking(
     booking_data: BookingCreate,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Create a new booking"""
     # Validate flight exists
@@ -94,7 +97,8 @@ async def cancel_booking(booking_id: str, db: AsyncSession = Depends(get_db)):
 @router.post("/checkin", response_model=BoardingPassResponse, status_code=status.HTTP_201_CREATED)
 async def checkin(
     checkin_data: CheckinRequest,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Perform web check-in"""
     # Get booking with flight info

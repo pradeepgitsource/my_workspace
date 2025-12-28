@@ -15,6 +15,9 @@ from app.services.flight_service import FlightService
 from app.services.passenger_service import PassengerService
 from app.services.booking_service import BookingService
 from app.core.schemas import *
+from app.core.dependencies import get_current_active_user
+from app.core.user_models import User
+from app.routes.auth import router as auth_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -59,9 +62,12 @@ def get_booking_service(db: AsyncSession = Depends(get_db)) -> BookingService:
         CheckinRepository(db)
     )
 
+# Include auth router
+app.include_router(auth_router)
+
 # Routes
 @app.post("/api/flights", response_model=FlightResponse, status_code=status.HTTP_201_CREATED, tags=["flights"])
-async def create_flight(flight_data: FlightCreate, service: FlightService = Depends(get_flight_service)):
+async def create_flight(flight_data: FlightCreate, service: FlightService = Depends(get_flight_service), current_user: User = Depends(get_current_active_user)):
     return await service.create_flight(flight_data)
 
 @app.get("/api/flights", response_model=List[FlightResponse], tags=["flights"])
@@ -85,7 +91,7 @@ async def get_passenger_bookings(passenger_id: str, service: PassengerService = 
     return await service.get_passenger_bookings(passenger_id)
 
 @app.post("/api/bookings", response_model=BookingResponse, status_code=status.HTTP_201_CREATED, tags=["bookings"])
-async def create_booking(booking_data: BookingCreate, service: BookingService = Depends(get_booking_service)):
+async def create_booking(booking_data: BookingCreate, service: BookingService = Depends(get_booking_service), current_user: User = Depends(get_current_active_user)):
     return await service.create_booking(booking_data)
 
 @app.get("/api/bookings/{booking_id}", response_model=BookingResponse, tags=["bookings"])
@@ -97,7 +103,7 @@ async def cancel_booking(booking_id: str, service: BookingService = Depends(get_
     await service.cancel_booking(booking_id)
 
 @app.post("/api/checkin", response_model=BoardingPassResponse, status_code=status.HTTP_201_CREATED, tags=["checkin"])
-async def checkin(checkin_data: CheckinRequest, service: BookingService = Depends(get_booking_service)):
+async def checkin(checkin_data: CheckinRequest, service: BookingService = Depends(get_booking_service), current_user: User = Depends(get_current_active_user)):
     return await service.checkin(checkin_data)
 
 @app.get("/api/checkin/{checkin_id}", response_model=BoardingPassResponse, tags=["checkin"])
