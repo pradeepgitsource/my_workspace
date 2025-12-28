@@ -11,26 +11,25 @@ const api = axios.create({
 
 export const flightAPI = {
   getFlights: () => api.get('/flights'),
+  createFlight: (flightData) => api.post('/flights', flightData),
   getFlight: (flightId) => api.get(`/flights/${flightId}`),
-  createFlight: (data) => api.post('/flights', data),
 };
 
 export const passengerAPI = {
-  createPassenger: (data) => api.post('/passengers', data),
+  createPassenger: (passengerData) => api.post('/passengers', passengerData),
   getPassenger: (passengerId) => api.get(`/passengers/${passengerId}`),
-  getPassengerBookings: (passengerId) => api.get(`/passengers/${passengerId}/bookings`),
 };
 
 export const bookingAPI = {
-  createBooking: (data) => api.post('/bookings', data),
+  createBooking: (bookingData) => api.post('/bookings', bookingData),
   getBooking: (bookingId) => api.get(`/bookings/${bookingId}`),
   cancelBooking: (bookingId) => api.delete(`/bookings/${bookingId}`),
-  getCheckinStatus: (bookingId) => api.get(`/bookings/${bookingId}/checkin-status`),
 };
 
 export const checkinAPI = {
-  performCheckin: (data) => api.post('/checkin', data),
+  checkin: (checkinData) => api.post('/checkin', checkinData),
   getBoardingPass: (checkinId) => api.get(`/checkin/${checkinId}`),
+  getCheckinStatus: (bookingId) => api.get(`/bookings/${bookingId}/checkin-status`),
 };
 
 export default api;

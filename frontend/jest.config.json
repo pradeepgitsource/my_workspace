@@ -1,0 +1,10 @@
+{
+  "testEnvironment": "jsdom",
+  "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"],
+  "moduleNameMapper": {
+    "^axios$": "axios/dist/node/axios.cjs"
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!axios)"
+  ]
+}

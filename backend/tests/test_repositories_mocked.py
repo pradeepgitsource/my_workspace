@@ -49,12 +49,14 @@ async def test_flight_repository_get_by_id_mocked():
         status="scheduled"
     )
     
-    mock_session.get = AsyncMock(return_value=mock_flight)
+    mock_result = AsyncMock()
+    mock_result.scalar_one_or_none = MagicMock(return_value=mock_flight)
+    mock_session.execute = AsyncMock(return_value=mock_result)
     
     repo = FlightRepository(mock_session)
     result = await repo.get_by_id("TEST123")
     
-    mock_session.get.assert_called_once()
+    mock_session.execute.assert_called_once()
     assert result == mock_flight
 
 @pytest.mark.asyncio

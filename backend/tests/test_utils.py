@@ -87,4 +87,4 @@ def test_validate_checkin_window():
     # Edge case: exactly 1 hour
     departure = now + timedelta(hours=1)
     valid, message = validate_checkin_window(departure)
-    assert valid
+    assert valid  # Should be True as it's exactly at the boundary
