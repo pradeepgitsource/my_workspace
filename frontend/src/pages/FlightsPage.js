@@ -25,7 +25,7 @@ const FlightsPage = () => {
   useEffect(() => {
     const fetchFlights = async () => {
       try {
-        console.log('Fetching flights from:', process.env.REACT_APP_API_URL || 'http://localhost:8000/api');
+        console.log('Fetching flights from API...');
         const response = await flightAPI.getFlights();
         console.log('Flights response:', response.data);
         setFlights(response.data);

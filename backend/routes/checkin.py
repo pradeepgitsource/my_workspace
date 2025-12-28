@@ -59,7 +59,11 @@ async def create_booking(
     return booking
 
 @router.get("/bookings/{booking_id}", response_model=BookingResponse)
-async def get_booking(booking_id: str, db: AsyncSession = Depends(get_db)):
+async def get_booking(
+    booking_id: str, 
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Get booking by ID"""
     result = await db.execute(select(Booking).where(Booking.booking_id == booking_id))
     booking = result.scalar_one_or_none()
@@ -70,7 +74,11 @@ async def get_booking(booking_id: str, db: AsyncSession = Depends(get_db)):
     return booking
 
 @router.delete("/bookings/{booking_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def cancel_booking(booking_id: str, db: AsyncSession = Depends(get_db)):
+async def cancel_booking(
+    booking_id: str, 
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Cancel a booking"""
     result = await db.execute(select(Booking).where(Booking.booking_id == booking_id))
     booking = result.scalar_one_or_none()
@@ -163,7 +171,11 @@ async def checkin(
     )
 
 @router.get("/checkin/{checkin_id}", response_model=BoardingPassResponse)
-async def get_boarding_pass(checkin_id: str, db: AsyncSession = Depends(get_db)):
+async def get_boarding_pass(
+    checkin_id: str, 
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Get boarding pass by check-in ID"""
     result = await db.execute(
         select(CheckinRecord, Booking, Flight)
@@ -189,7 +201,11 @@ async def get_boarding_pass(checkin_id: str, db: AsyncSession = Depends(get_db))
     )
 
 @router.get("/bookings/{booking_id}/checkin-status")
-async def get_checkin_status(booking_id: str, db: AsyncSession = Depends(get_db)):
+async def get_checkin_status(
+    booking_id: str, 
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Check if booking is already checked in"""
     result = await db.execute(select(CheckinRecord).where(CheckinRecord.booking_id == booking_id))
     checkin = result.scalar_one_or_none()

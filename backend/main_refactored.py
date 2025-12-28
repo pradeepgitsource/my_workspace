@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from typing import List
@@ -22,9 +23,11 @@ from app.routes.auth import router as auth_router
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+security = HTTPBearer()
+
 app = FastAPI(
     title="Flight Web Check-in API",
-    description="Modular flight check-in system with PostgreSQL",
+    description="Modular flight check-in system with PostgreSQL and JWT Authentication",
     version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -71,23 +74,43 @@ async def create_flight(flight_data: FlightCreate, service: FlightService = Depe
     return await service.create_flight(flight_data)
 
 @app.get("/api/flights", response_model=List[FlightResponse], tags=["flights"])
-async def get_flights(service: FlightService = Depends(get_flight_service)):
+async def get_flights(
+    service: FlightService = Depends(get_flight_service),
+    current_user: User = Depends(get_current_active_user),
+    token: str = Depends(security)
+):
     return await service.get_all_flights()
 
 @app.get("/api/flights/{flight_id}", response_model=FlightResponse, tags=["flights"])
-async def get_flight(flight_id: str, service: FlightService = Depends(get_flight_service)):
+async def get_flight(
+    flight_id: str, 
+    service: FlightService = Depends(get_flight_service),
+    current_user: User = Depends(get_current_active_user)
+):
     return await service.get_flight(flight_id)
 
 @app.post("/api/passengers", response_model=PassengerResponse, status_code=status.HTTP_201_CREATED, tags=["passengers"])
-async def create_passenger(passenger_data: PassengerCreate, service: PassengerService = Depends(get_passenger_service)):
+async def create_passenger(
+    passenger_data: PassengerCreate, 
+    service: PassengerService = Depends(get_passenger_service),
+    current_user: User = Depends(get_current_active_user)
+):
     return await service.create_passenger(passenger_data)
 
 @app.get("/api/passengers/{passenger_id}", response_model=PassengerResponse, tags=["passengers"])
-async def get_passenger(passenger_id: str, service: PassengerService = Depends(get_passenger_service)):
+async def get_passenger(
+    passenger_id: str, 
+    service: PassengerService = Depends(get_passenger_service),
+    current_user: User = Depends(get_current_active_user)
+):
     return await service.get_passenger(passenger_id)
 
 @app.get("/api/passengers/{passenger_id}/bookings", response_model=List[BookingResponse], tags=["passengers"])
-async def get_passenger_bookings(passenger_id: str, service: PassengerService = Depends(get_passenger_service)):
+async def get_passenger_bookings(
+    passenger_id: str, 
+    service: PassengerService = Depends(get_passenger_service),
+    current_user: User = Depends(get_current_active_user)
+):
     return await service.get_passenger_bookings(passenger_id)
 
 @app.post("/api/bookings", response_model=BookingResponse, status_code=status.HTTP_201_CREATED, tags=["bookings"])
@@ -95,11 +118,19 @@ async def create_booking(booking_data: BookingCreate, service: BookingService = 
     return await service.create_booking(booking_data)
 
 @app.get("/api/bookings/{booking_id}", response_model=BookingResponse, tags=["bookings"])
-async def get_booking(booking_id: str, service: BookingService = Depends(get_booking_service)):
+async def get_booking(
+    booking_id: str, 
+    service: BookingService = Depends(get_booking_service),
+    current_user: User = Depends(get_current_active_user)
+):
     return await service.get_booking(booking_id)
 
 @app.delete("/api/bookings/{booking_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["bookings"])
-async def cancel_booking(booking_id: str, service: BookingService = Depends(get_booking_service)):
+async def cancel_booking(
+    booking_id: str, 
+    service: BookingService = Depends(get_booking_service),
+    current_user: User = Depends(get_current_active_user)
+):
     await service.cancel_booking(booking_id)
 
 @app.post("/api/checkin", response_model=BoardingPassResponse, status_code=status.HTTP_201_CREATED, tags=["checkin"])
@@ -107,11 +138,19 @@ async def checkin(checkin_data: CheckinRequest, service: BookingService = Depend
     return await service.checkin(checkin_data)
 
 @app.get("/api/checkin/{checkin_id}", response_model=BoardingPassResponse, tags=["checkin"])
-async def get_boarding_pass(checkin_id: str, service: BookingService = Depends(get_booking_service)):
+async def get_boarding_pass(
+    checkin_id: str, 
+    service: BookingService = Depends(get_booking_service),
+    current_user: User = Depends(get_current_active_user)
+):
     return await service.get_boarding_pass(checkin_id)
 
 @app.get("/api/bookings/{booking_id}/checkin-status", tags=["checkin"])
-async def get_checkin_status(booking_id: str, service: BookingService = Depends(get_booking_service)):
+async def get_checkin_status(
+    booking_id: str, 
+    service: BookingService = Depends(get_booking_service),
+    current_user: User = Depends(get_current_active_user)
+):
     return await service.get_checkin_status(booking_id)
 
 @app.on_event("startup")

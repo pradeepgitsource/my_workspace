@@ -61,4 +61,6 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+const authService = new AuthService();
+export { axios }; // Export configured axios instance
+export default authService;
